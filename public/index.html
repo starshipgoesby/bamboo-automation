@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bamboo CI/CD</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px 10px; /* Reduced padding */
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group label {
+            font-size: 12px; /* Smaller font size */
+        }
+        .form-control {
+            font-size: 12px; /* Smaller font size */
+        }
+        .btn-primary {
+            font-size: 12px; /* Smaller font size */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4" style="text-align: center; font-size: 24px;">Bamboo CI/CD</h1> <!-- Larger header font size -->
+        <form id="updateForm">
+            <div class="form-group">
+                <label for="projectName">Project Name:</label>
+                <input type="text" id="projectName" name="projectName" class="form-control">
+            </div>
+
+            <!-- New input for Project Key -->
+            <div class="form-group">
+                <label for="projectKey">Project Key:</label>
+                <input type="text" id="projectKey" name="projectKey" class="form-control" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="planName">Plan Name:</label>
+                <input type="text" id="planName" name="planName" class="form-control">
+            </div>
+
+            <!-- New input for Plan Key -->
+            <div class="form-group">
+                <label for="planKey">Plan Key:</label>
+                <input type="text" id="planKey" name="planKey" class="form-control" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="gitUrl">Git URL:</label>
+                <input type="text" id="gitUrl" name="gitUrl" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="branch">Branch:</label>
+                <input type="text" id="branch" name="branch" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Submit</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Function to generate random string with uppercase letters
+        function generateRandomString(minLength, maxLength) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const length = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        document.getElementById('projectName').addEventListener('keydown', function(event) {
+            if (event.key === 'Tab') {
+                event.preventDefault();
+                document.getElementById('planName').focus();
+            }
+        });
+
+        document.getElementById('planName').addEventListener('keydown', function(event) {
+            if (event.key === 'Tab') {
+                event.preventDefault();
+                document.getElementById('gitUrl').focus();
+            }
+        });
+
+        document.getElementById('updateForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const projectName = document.getElementById('projectName').value;
+            const projectKeyInput = document.getElementById('projectKey');
+
+            // Generate random project key and update the input field
+            const projectKey = generateRandomString(3, 5);
+            projectKeyInput.value = projectKey;
+
+            const planName = document.getElementById('planName').value;
+            const planKeyInput = document.getElementById('planKey');
+
+            // Generate random plan key and update the input field
+            const planKey = generateRandomString(3, 5);
+            planKeyInput.value = planKey;
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Java code updated successfully!');
+                    // Reset form fields
+                    this.reset();
+                } else {
+                    alert('Failed to update Java code.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
